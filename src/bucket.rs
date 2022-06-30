@@ -30,12 +30,8 @@ where
 	where
 		W: std::io::Write
 	{
-		println!("wdoin");
 		bincode::serialize_into(writer.by_ref(), &self.header)?;
-		writer.flush()?;
-		println!("diefbwf");
-		serde_epee::serialize_into(writer, &self.payload)?;
-		println!("wefjbweifk");
+		serde_epee::to_writer(writer.by_ref(), &self.payload)?;
 		writer.flush()?;
 		Ok(())
 	}

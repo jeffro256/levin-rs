@@ -2,7 +2,7 @@
 pub enum Error {
 	IOError(std::io::ErrorKind),
 	BincodeError(bincode::ErrorKind),
-	EpeeStorageError(serde_epee::ErrorKind),
+	EpeeStorageError(serde_epee::Error),
 	ShortStream,
 	ImmutableDestination,
 	BadValue,
@@ -24,8 +24,16 @@ impl From<bincode::Error> for Error {
 	}
 }
 
+/*
+impl From<Box<bincode::Error>> for Error {
+	fn from(err: Box<bincode::Error>) -> Self {
+		Self::BincodeError(*err)
+	}
+}
+*/
+
 impl From<serde_epee::Error> for Error {
 	fn from(err: serde_epee::Error) -> Self {
-		Self::EpeeStorageError(err.kind())
+		Self::EpeeStorageError(err.clone())
 	}
 }

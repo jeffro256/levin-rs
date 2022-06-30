@@ -79,4 +79,6 @@ pub const fn from_hex<const N: usize>(hex_str: &str) -> [u8; N] {
 	res
 }
 
+pub const CRYPTONOTE_STAGENET_NETWORK_ID: [u8; 16] = from_hex("1230F171610441611731008216A1A112");
+
 pub const MONERO_GENESIS_HASH: [u8; 32] = from_hex("418015bb9ae982a1975da7d79277c2705727a56894ba0fb246adaabb1f4632e3");

@@ -3,7 +3,7 @@ use std::io::{ Read, Write };
 use serde::{Serialize, Deserialize};
 
 use crate::constants::{self, LevinMessage, LevinFragment};
-use crate::error;
+use crate::error::{Error, Result};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Header {
@@ -71,5 +71,16 @@ impl Header {
 		};
 
 		return typeMask | fragMask;
+	}
+
+	pub fn from_reader<R: std::io::Read>(reader: R) -> Result<Self> {
+		match  bincode::deserialize_from(reader) {
+			Ok(res) => Ok(res),
+			Err(boxed_err_kind) => Err(Error::BincodeError(*boxed_err_kind))
+		}
+	}
+
+	pub fn command(&self) -> u32 {
+		self.command
 	}
 }

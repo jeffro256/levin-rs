@@ -1,11 +1,11 @@
-use serde::{Serialize, Deserialize};
+use serde::{self, Serialize, Deserialize};
 
 use crate::bucket::Bucket;
 use crate::constants;
 use crate::error::Result;
 
-pub fn create_handshake_request_bucket(my_port: u32, network_id: String, peer_id: u64) -> Result<Bucket<HandshakeRequestPayload>> {
-	let handshake_payload = HandshakeRequestPayload::new(my_port, network_id, peer_id);
+pub fn create_handshake_request_bucket(my_port: u32, peer_id: u64) -> Result<Bucket<HandshakeRequestPayload>> {
+	let handshake_payload = HandshakeRequestPayload::new(my_port, peer_id);
 	Bucket::new_request(constants::LEVIN_COMMAND_HANDSHAKE, handshake_payload)
 }
 
@@ -13,7 +13,8 @@ pub fn create_handshake_request_bucket(my_port: u32, network_id: String, peer_id
 struct HandshakeNodeData {
 	local_time: u64,
 	my_port: u32,
-	network_id: String,
+	#[serde(with = "serde_bytes")]
+	network_id: Vec<u8>,
 	peer_id: u64
 }
 
@@ -22,11 +23,11 @@ impl HandshakeNodeData {
 		std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()
 	}
 
-	fn new(my_port: u32, network_id: String, peer_id: u64) -> Self {
+	fn new(my_port: u32, peer_id: u64) -> Self {
 		Self {
 			local_time: Self::unix_now(),
 			my_port: my_port,
-			network_id: network_id,
+			network_id: Vec::<u8>::from(constants::CRYPTONOTE_STAGENET_NETWORK_ID),
 			peer_id: peer_id
 		}
 	}
@@ -60,9 +61,9 @@ pub struct HandshakeRequestPayload {
 }
 
 impl HandshakeRequestPayload {
-	pub fn new(my_port: u32, network_id: String, peer_id: u64) -> Self {
+	pub fn new(my_port: u32, peer_id: u64) -> Self {
 		Self {
-			node_data: HandshakeNodeData::new(my_port, network_id, peer_id),
+			node_data: HandshakeNodeData::new(my_port, peer_id),
 			payload_data: HandshakePayloadData::genesis_payload()
 		}
 	}

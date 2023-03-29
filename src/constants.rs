@@ -27,14 +27,16 @@ pub const CRYPTONOTE_COMMAND_RESP_CHAIN: u32 = 2007;
 pub const CRYPTONOTE_COMMAND_NEW_FLUFFY_BLOCK: u32 = 2008;
 pub const CRYPTONOTE_COMMAND_REQ_FLUFFY_MISSING_TX: u32 = 2009;
 
-pub enum LevinMessage {
+pub enum LevinMessage
+{
 	Request,
 	Response,
 	Notification,
 	Dummy
 }
 
-pub enum LevinFragment {
+pub enum LevinFragment
+{
 	Begin,
 	Middle,
 	End,

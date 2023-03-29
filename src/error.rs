@@ -1,39 +1,66 @@
+use core::fmt::{self, Debug, Display, Formatter};
+
 #[derive(Debug)]
-pub enum Error {
-	IOError(std::io::ErrorKind),
-	BincodeError(bincode::ErrorKind),
-	EpeeStorageError(serde_epee::Error),
+pub enum ErrorKind
+{
+	IOError,
+	EpeeStorageError,
 	ShortStream,
 	ImmutableDestination,
 	BadValue,
 	MissingSignature,
-	BadVersion
+	BadVersion,
+}
+
+#[derive(Debug)]
+pub struct Error
+{
+	kind: ErrorKind,
+	message: String,
+	source: Option<Box<dyn std::error::Error>>
+}
+
+impl Display for Error
+{
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result
+	{
+		if self.message.len() != 0
+		{
+			write!(f, "levin_rs {:?}: {}", self.kind, self.message)
+		}
+		else
+		{
+			write!(f, "levin_rs {:?}", self.kind)
+		}
+    }
+}
+
+impl std::error::Error for Error
+{
+	fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+	{
+		match &self.source {
+			Some(s) => Some(s.as_ref()),
+			None => None
+		}
+	}
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-impl From<std::io::Error> for Error {
-	fn from(err: std::io::Error) -> Self {
-		Self::IOError(err.kind())
-	}
+macro_rules! impl_from_error
+{
+    ($error_name:path, $ekind:expr) =>
+	{
+        impl From<$error_name> for Error
+		{
+			fn from(err: $error_name) -> Self
+			{
+				Self { kind: $ekind, message: String::new(), source: Some(Box::new(err)) }
+			}
+		}
+    };
 }
 
-impl From<bincode::Error> for Error {
-	fn from(err: bincode::Error) -> Self {
-		Self::BincodeError(*err)
-	}
-}
-
-/*
-impl From<Box<bincode::Error>> for Error {
-	fn from(err: Box<bincode::Error>) -> Self {
-		Self::BincodeError(*err)
-	}
-}
-*/
-
-impl From<serde_epee::Error> for Error {
-	fn from(err: serde_epee::Error) -> Self {
-		Self::EpeeStorageError(err.clone())
-	}
-}
+impl_from_error!(std::io::Error, ErrorKind::IOError);
+impl_from_error!(serde_epee::Error, ErrorKind::IOError);

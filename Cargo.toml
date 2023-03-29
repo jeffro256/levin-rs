@@ -2,8 +2,11 @@
 name = "levin"
 version = "0.1.0"
 edition = "2021"
+description = "Library for the Levin p2p protocol"
+repository = "https://github.com/jeffro256/levin-rs"
+homepage = "https://github.com/jeffro256/levin-rs"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_bytes = "0.11"
-serde_epee = { path = "../serde_epee" }
+serde_epee = "0.2"

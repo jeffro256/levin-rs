@@ -2,6 +2,7 @@
 name = "levin"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE.txt"
 description = "Library for the Levin p2p protocol"
 repository = "https://github.com/jeffro256/levin-rs"
 homepage = "https://github.com/jeffro256/levin-rs"
